@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouncing Language Icons</title>
+    <script>
+        async function loadWasm() {
+            const response = await fetch('main.wasm');
+            const bytes = await response.arrayBuffer();
+            const module = await WebAssembly.instantiate(bytes);
+            module.instance.exports.main(); // Call the main function
+        }
+        window.onload = loadWasm;
+    </script>
+</head>
+<body>
+    <h1>Bouncing Language Icons</h1>
+    <canvas id="canvas" width="1400" height="800"></canvas>
+</body>
+</html> 
