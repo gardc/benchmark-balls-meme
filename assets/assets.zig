@@ -1,0 +1,15 @@
+pub const c_icon = @embedFile("c.png");
+pub const cpp_icon = @embedFile("cpp.png");
+pub const rust_icon = @embedFile("rust.png");
+pub const zig_icon = @embedFile("zig.png");
+pub const go_icon = @embedFile("go.png");
+pub const java_icon = @embedFile("java.png");
+pub const kotlin_icon = @embedFile("kotlin.png");
+pub const swift_icon = @embedFile("swift.png");
+pub const csharp_icon = @embedFile("csharp.png");
+pub const python_icon = @embedFile("python.png");
+pub const ruby_icon = @embedFile("ruby.png");
+pub const php_icon = @embedFile("php.png");
+pub const ts_icon = @embedFile("ts.png");
+pub const haskell_icon = @embedFile("haskell.png");
+pub const nim_icon = @embedFile("nim.png");

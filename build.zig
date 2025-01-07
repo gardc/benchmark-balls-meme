@@ -6,7 +6,7 @@ pub fn build(b: *std.Build) void {
 
     // Native build
     const native_exe = b.addExecutable(.{
-        .name = "game-native",
+        .name = "balls-native",
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
@@ -20,6 +20,14 @@ pub fn build(b: *std.Build) void {
     native_exe.linkLibrary(raylib_native.artifact("raylib"));
     b.installArtifact(native_exe);
 
+    // Add this line to create a package path for the assets
+    const assets = b.addModule("assets", .{
+        .root_source_file = b.path("assets/assets.zig"),
+    });
+
+    // Add the assets module to the executable
+    native_exe.root_module.addImport("assets", assets);
+
     // Run step for native build
     const run_cmd = b.addRunArtifact(native_exe);
     if (b.args) |args| {
@@ -29,29 +37,29 @@ pub fn build(b: *std.Build) void {
     run_step.dependOn(&run_cmd.step);
 
     // WASM build
-    const wasm_step = b.step("wasm", "Build WASM version");
+    // const wasm_step = b.step("wasm", "Build WASM version");
 
-    // Only build WASM if specifically requested
-    if (target.result.os.tag == .wasi and target.result.cpu.arch == .wasm32) {
-        const wasm = b.addExecutable(.{
-            .name = "game",
-            .root_source_file = b.path("src/main.zig"),
-            .target = target,
-            .optimize = optimize,
-        });
+    // // Only build WASM if specifically requested
+    // if (target.result.os.tag == .wasi and target.result.cpu.arch == .wasm32) {
+    //     const wasm = b.addExecutable(.{
+    //         .name = "game",
+    //         .root_source_file = b.path("src/main.zig"),
+    //         .target = target,
+    //         .optimize = optimize,
+    //     });
 
-        const raylib_wasm = b.dependency("raylib", .{
-            .target = target,
-            .optimize = optimize,
-            .shared = false,
-        });
+    //     const raylib_wasm = b.dependency("raylib", .{
+    //         .target = target,
+    //         .optimize = optimize,
+    //         .shared = false,
+    //     });
 
-        wasm.root_module.export_symbol_names = &[_][]const u8{"main"};
-        wasm.linkLibC();
-        wasm.linkLibrary(raylib_wasm.artifact("raylib"));
-        b.installArtifact(wasm);
+    //     wasm.root_module.export_symbol_names = &[_][]const u8{"main"};
+    //     wasm.linkLibC();
+    //     wasm.linkLibrary(raylib_wasm.artifact("raylib"));
+    //     b.installArtifact(wasm);
 
-        const install_wasm = b.addInstallArtifact(wasm, .{});
-        wasm_step.dependOn(&install_wasm.step);
-    }
+    //     const install_wasm = b.addInstallArtifact(wasm, .{});
+    //     wasm_step.dependOn(&install_wasm.step);
+    // }
 }
