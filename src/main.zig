@@ -59,12 +59,20 @@ fn HSVtoRGB(h: f32, s: f32, v: f32) ray.Color {
     };
 }
 
+const rand = std.crypto.random;
+
+fn getRandomSpeed() f32 {
+    return rand.float(f32) * 15 + 1;
+}
+
+fn getRandomAngle() f32 {
+    return rand.float(f32) * 360.0;
+}
+
 pub fn main() !void {
     const screen_width = 1400;
     const screen_height = 800;
     const circle_radius: f32 = 40;
-
-    // ray.SetTraceLogLevel(ray.LOG_WARNING); // Reduce logging
 
     ray.InitWindow(screen_width, screen_height, "(deez) language ballz");
     ray.SetConfigFlags(ray.FLAG_VSYNC_HINT);
@@ -97,39 +105,34 @@ pub fn main() !void {
         }
     }
 
-    const rand = std.crypto.random;
-
     var circles = [_]Circle{
         // Systems languages (fastest)
-        .{ .x = 100, .y = 100, .radius = circle_radius, .speed = 12, .angle = rand.float(f32) * 360.0, .texture = c_texture },
-        .{ .x = 150, .y = 150, .radius = circle_radius, .speed = 11, .angle = rand.float(f32) * 360.0, .texture = cpp_texture },
-        .{ .x = 200, .y = 200, .radius = circle_radius, .speed = 11, .angle = rand.float(f32) * 360.0, .texture = rust_texture },
-        .{ .x = 250, .y = 250, .radius = circle_radius + 30, .speed = 11, .angle = rand.float(f32) * 360.0, .texture = zig_texture },
+        .{ .x = 100, .y = 100, .radius = circle_radius, .speed = 12, .angle = getRandomAngle(), .texture = c_texture },
+        .{ .x = 150, .y = 150, .radius = circle_radius, .speed = 11, .angle = getRandomAngle(), .texture = cpp_texture },
+        .{ .x = 200, .y = 200, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = rust_texture },
+        .{ .x = 250, .y = 250, .radius = circle_radius + 30, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = zig_texture },
 
         // Fast compiled languages
-        .{ .x = 300, .y = 300, .radius = circle_radius + 30, .speed = 9, .angle = rand.float(f32) * 360.0, .texture = go_texture },
-        .{ .x = 350, .y = 350, .radius = circle_radius, .speed = 8, .angle = rand.float(f32) * 360.0, .texture = swift_texture },
-        .{ .x = 400, .y = 400, .radius = circle_radius, .speed = 8, .angle = rand.float(f32) * 360.0, .texture = nim_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius + 30, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = go_texture },
+        .{ .x = 350, .y = 350, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = swift_texture },
+        .{ .x = 400, .y = 400, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = nim_texture },
 
         // JVM languages
-        .{ .x = 450, .y = 450, .radius = circle_radius, .speed = 7, .angle = rand.float(f32) * 360.0, .texture = java_texture },
-        .{ .x = 500, .y = 500, .radius = circle_radius, .speed = 7, .angle = rand.float(f32) * 360.0, .texture = kotlin_texture },
+        .{ .x = 450, .y = 450, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = java_texture },
+        .{ .x = 500, .y = 500, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = kotlin_texture },
 
         // Managed languages
-        .{ .x = 150, .y = 400, .radius = circle_radius, .speed = 6, .angle = rand.float(f32) * 360.0, .texture = csharp_texture },
+        .{ .x = 150, .y = 400, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = csharp_texture },
 
         // Interpreted/dynamic languages (slower)
-        .{ .x = 200, .y = 450, .radius = circle_radius, .speed = 5, .angle = rand.float(f32) * 360.0, .texture = python_texture },
-        .{ .x = 250, .y = 500, .radius = circle_radius, .speed = 5, .angle = rand.float(f32) * 360.0, .texture = ruby_texture },
-        .{ .x = 300, .y = 550, .radius = circle_radius, .speed = 5, .angle = rand.float(f32) * 360.0, .texture = php_texture },
-        .{ .x = 350, .y = 100, .radius = circle_radius, .speed = 6, .angle = rand.float(f32) * 360.0, .texture = ts_texture },
+        .{ .x = 200, .y = 450, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = python_texture },
+        .{ .x = 250, .y = 500, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = ruby_texture },
+        .{ .x = 300, .y = 550, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = php_texture },
+        .{ .x = 350, .y = 100, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = ts_texture },
 
         // Functional languages
-        .{ .x = 400, .y = 150, .radius = circle_radius, .speed = 6, .angle = rand.float(f32) * 360.0, .texture = haskell_texture },
+        .{ .x = 400, .y = 150, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = haskell_texture },
     };
-
-    // var previous_fps: isize = target_fps; // Track previous FPS for drop detection
-    // var frame_drop_count: isize = 0; // Count frame drops
 
     // Rainbow background
     var hue: f32 = 0.0;
@@ -197,14 +200,10 @@ pub fn main() !void {
 
         // Draw FPS and frame drop information
         const current_fps = ray.GetFPS();
-        // if (current_fps < previous_fps and current_fps < 110) {
-        //     frame_drop_count += 1;
-        // }
-        // previous_fps = current_fps;
 
         var buffer: [64:0]u8 = undefined; // Note the `:0` which makes this a sentinel-terminated array
         const fps_text = try std.fmt.bufPrintZ(&buffer, "FPS: {d}", .{current_fps});
 
-        ray.DrawText(fps_text.ptr, 10, screen_height - 50, 20, ray.GREEN);
+        ray.DrawText(fps_text.ptr, 10, screen_height - 30, 15, ray.GREEN);
     }
 }
