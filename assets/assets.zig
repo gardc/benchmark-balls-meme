@@ -13,3 +13,4 @@ pub const php_icon = @embedFile("php.png");
 pub const ts_icon = @embedFile("ts.png");
 pub const haskell_icon = @embedFile("haskell.png");
 pub const nim_icon = @embedFile("nim.png");
+pub const elixir_icon = @embedFile("elixir.png");

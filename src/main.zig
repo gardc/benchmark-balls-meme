@@ -96,8 +96,9 @@ pub fn main() !void {
     const ts_texture = ray.LoadTextureFromImage(ray.LoadImageFromMemory(".png", assets.ts_icon, assets.ts_icon.len));
     const haskell_texture = ray.LoadTextureFromImage(ray.LoadImageFromMemory(".png", assets.haskell_icon, assets.haskell_icon.len));
     const nim_texture = ray.LoadTextureFromImage(ray.LoadImageFromMemory(".png", assets.nim_icon, assets.nim_icon.len));
+    const elixir_texture = ray.LoadTextureFromImage(ray.LoadImageFromMemory(".png", assets.elixir_icon, assets.elixir_icon.len));
 
-    const textures = [_]ray.Texture2D{ c_texture, cpp_texture, rust_texture, zig_texture, go_texture, java_texture, kotlin_texture, swift_texture, csharp_texture, python_texture, ruby_texture, php_texture, ts_texture, haskell_texture, nim_texture };
+    const textures = [_]ray.Texture2D{ c_texture, cpp_texture, rust_texture, zig_texture, go_texture, java_texture, kotlin_texture, swift_texture, csharp_texture, python_texture, ruby_texture, php_texture, ts_texture, haskell_texture, nim_texture, elixir_texture };
 
     defer {
         for (textures) |texture| {
@@ -132,6 +133,7 @@ pub fn main() !void {
 
         // Functional languages
         .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = haskell_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = elixir_texture },
     };
 
     // Rainbow background
