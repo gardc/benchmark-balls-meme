@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bouncing Language Icons</title>
-    <script>
-        async function loadWasm() {
-            const response = await fetch('main.wasm');
-            const bytes = await response.arrayBuffer();
-            const module = await WebAssembly.instantiate(bytes);
-            module.instance.exports.main(); // Call the main function
+    <meta charset="utf-8">
+    <title>Zig + Raylib WASM</title>
+    <style>
+        canvas {
+            border: 1px solid black;
         }
-        window.onload = loadWasm;
-    </script>
+    </style>
 </head>
 <body>
-    <h1>Bouncing Language Icons</h1>
-    <canvas id="canvas" width="1400" height="800"></canvas>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+        var Module = {
+            canvas: document.getElementById('canvas')
+        };
+    </script>
+    <script src="raylib.js"></script>
+    <script src="game.js"></script>
 </body>
 </html> 

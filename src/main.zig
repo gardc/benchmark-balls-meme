@@ -78,7 +78,7 @@ pub fn main() !void {
     ray.SetConfigFlags(ray.FLAG_VSYNC_HINT);
     defer ray.CloseWindow();
 
-    // ray.SetTargetFPS(target_fps);
+    ray.SetTargetFPS(120);
 
     // Load textures from embedded files
     const c_texture = ray.LoadTextureFromImage(ray.LoadImageFromMemory(".png", assets.c_icon, assets.c_icon.len));
