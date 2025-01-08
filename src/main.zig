@@ -3,7 +3,7 @@ const ray = @cImport(@cInclude("raylib.h"));
 const math = @import("std").math;
 const assets = @import("assets");
 
-const target_fps = 120;
+// const target_fps = 120;
 
 const Circle = struct {
     x: f32,
@@ -62,7 +62,7 @@ fn HSVtoRGB(h: f32, s: f32, v: f32) ray.Color {
 const rand = std.crypto.random;
 
 fn getRandomSpeed() f32 {
-    return rand.float(f32) * 15 + 1;
+    return rand.float(f32) * 1500 + 200;
 }
 
 fn getRandomAngle() f32 {
@@ -78,7 +78,7 @@ pub fn main() !void {
     ray.SetConfigFlags(ray.FLAG_VSYNC_HINT);
     defer ray.CloseWindow();
 
-    ray.SetTargetFPS(target_fps);
+    // ray.SetTargetFPS(target_fps);
 
     // Load textures from embedded files
     const c_texture = ray.LoadTextureFromImage(ray.LoadImageFromMemory(".png", assets.c_icon, assets.c_icon.len));
@@ -107,8 +107,8 @@ pub fn main() !void {
 
     var circles = [_]Circle{
         // Systems languages (fastest)
-        .{ .x = 100, .y = 100, .radius = circle_radius, .speed = 12, .angle = getRandomAngle(), .texture = c_texture },
-        .{ .x = 150, .y = 150, .radius = circle_radius, .speed = 11, .angle = getRandomAngle(), .texture = cpp_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = c_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = cpp_texture },
         .{ .x = 200, .y = 200, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = rust_texture },
         .{ .x = 250, .y = 250, .radius = circle_radius + 30, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = zig_texture },
 
@@ -118,8 +118,8 @@ pub fn main() !void {
         .{ .x = 400, .y = 400, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = nim_texture },
 
         // JVM languages
-        .{ .x = 450, .y = 450, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = java_texture },
-        .{ .x = 500, .y = 500, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = kotlin_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = java_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = kotlin_texture },
 
         // Managed languages
         .{ .x = 150, .y = 400, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = csharp_texture },
@@ -127,11 +127,11 @@ pub fn main() !void {
         // Interpreted/dynamic languages (slower)
         .{ .x = 200, .y = 450, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = python_texture },
         .{ .x = 250, .y = 500, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = ruby_texture },
-        .{ .x = 300, .y = 550, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = php_texture },
-        .{ .x = 350, .y = 100, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = ts_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = php_texture },
+        .{ .x = 350, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = ts_texture },
 
         // Functional languages
-        .{ .x = 400, .y = 150, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = haskell_texture },
+        .{ .x = 300, .y = 300, .radius = circle_radius, .speed = getRandomSpeed(), .angle = getRandomAngle(), .texture = haskell_texture },
     };
 
     // Rainbow background
@@ -139,23 +139,39 @@ pub fn main() !void {
     const hue_speed: f32 = 0.5;
 
     while (!ray.WindowShouldClose()) {
-        // Update circle positionss
-        for (&circles) |*circle| {
-            // Update position based on angle
-            circle.x += circle.speed * math.cos(circle.angle * (std.math.pi / 180.0));
-            circle.y += circle.speed * math.sin(circle.angle * (std.math.pi / 180.0));
+        // Get delta time at the start of each frame
+        const delta_time = ray.GetFrameTime();
 
-            // Bounce off screen edges
-            if (circle.x - circle.radius <= 0 or circle.x + circle.radius >= screen_width) {
-                circle.angle = 180 - circle.angle; // Reflect angle
+        // Update circle positions
+        for (&circles) |*circle| {
+            // Calculate new position
+            const new_x = circle.x + circle.speed * delta_time * math.cos(circle.angle * (std.math.pi / 180.0));
+            const new_y = circle.y + circle.speed * delta_time * math.sin(circle.angle * (std.math.pi / 180.0));
+
+            // Check and handle boundary collisions
+            if (new_x - circle.radius <= 0) {
+                circle.x = circle.radius; // Clamp to left edge
+                circle.angle = 180 - circle.angle;
+            } else if (new_x + circle.radius >= screen_width) {
+                circle.x = screen_width - circle.radius; // Clamp to right edge
+                circle.angle = 180 - circle.angle;
+            } else {
+                circle.x = new_x; // No collision, update normally
             }
-            if (circle.y - circle.radius <= 0 or circle.y + circle.radius >= screen_height) {
-                circle.angle = -circle.angle; // Reflect angle
+
+            if (new_y - circle.radius <= 0) {
+                circle.y = circle.radius; // Clamp to top edge
+                circle.angle = -circle.angle;
+            } else if (new_y + circle.radius >= screen_height) {
+                circle.y = screen_height - circle.radius; // Clamp to bottom edge
+                circle.angle = -circle.angle;
+            } else {
+                circle.y = new_y; // No collision, update normally
             }
         }
 
-        // Update background hue
-        hue += hue_speed;
+        // Update background hue (make this frame-rate independent too)
+        hue += hue_speed * delta_time * 60.0; // multiply by 60 to maintain similar speed to before
         if (hue >= 360.0) hue = 0.0;
 
         // Drawing
@@ -204,6 +220,6 @@ pub fn main() !void {
         var buffer: [64:0]u8 = undefined; // Note the `:0` which makes this a sentinel-terminated array
         const fps_text = try std.fmt.bufPrintZ(&buffer, "FPS: {d}", .{current_fps});
 
-        ray.DrawText(fps_text.ptr, 10, screen_height - 30, 15, ray.GREEN);
+        ray.DrawText(fps_text.ptr, 10, screen_height - 30, 30, ray.GREEN);
     }
 }
